@@ -3,34 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#012063">
+  <meta name="description" content="Aplicación de Financiamiento Tupak Rantina">
   <title>Financiamiento Tupak Rantina</title>
   <link rel="manifest" href="/finaciamientos/manifest.json">
+  <link rel="apple-touch-icon" href="/finaciamientos/icon-192x192.png">
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
+      font-family: Arial, sans-serif;
     }
     iframe {
       border: none;
       width: 100%;
       height: 100%;
     }
+    #offline-message {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: #012063;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      z-index: 1000;
+    }
+    .install-button {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #012063;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
+  <div id="offline-message">
+    Estás trabajando sin conexión. Algunas funciones pueden no estar disponibles.
+  </div>
+  <button id="install-button" class="install-button">+</button>
   <iframe src="https://script.google.com/macros/s/AKfycbxngouMO1mzQG999zB7PDrrGOHdGSCT1pR_aT-Mm6MqxVAjCXcRbHlva-M55q0C1DzZ/exec" frameborder="0"></iframe>
+  
   <script>
+    // Servicio de worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/finaciamientos/service-worker.js')
-      .then(registration => {
-        console.log('Service Worker registrado con éxito:', registration);
-      })
-      .catch(error => {
-        console.log('Fallo en el registro del Service Worker:', error);
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/finaciamientos/service-worker.js')
+        .then(registration => {
+          console.log('Service Worker registrado con éxito:', registration);
+        })
+        .catch(error => {
+          console.log('Fallo en el registro del Service Worker:', error);
+        });
       });
     }
+
+    // Manejo del estado de conexión
+    window.addEventListener('online', function() {
+      document.getElementById('offline-message').style.display = 'none';
+    });
+
+    window.addEventListener('offline', function() {
+      document.getElementById('offline-message').style.display = 'block';
+    });
+
+    // Lógica para instalar la PWA
+    let deferredPrompt;
+    const installButton = document.getElementById('install-button');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevenir que Chrome muestre la mini-infobar
+      e.preventDefault();
+      // Guardar el evento para que se pueda activar más tarde
+      deferredPrompt = e;
+      // Mostrar el botón de instalación
+      installButton.style.display = 'block';
+    });
+
+    installButton.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        // Mostrar el prompt de instalación
+        deferredPrompt.prompt();
+        // Esperar a que el usuario responda al prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        // Ya no necesitamos el prompt guardado
+        deferredPrompt = null;
+        // Ocultar el botón de instalación
+        installButton.style.display = 'none';
+      }
+    });
+
+    // Ocultar el botón si la app ya está instalada
+    window.addEventListener('appinstalled', () => {
+      installButton.style.display = 'none';
+      console.log('PWA was installed');
+    });
   </script>
 </body>
 </html>
