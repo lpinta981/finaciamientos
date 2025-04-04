@@ -5,7 +5,7 @@ self.addEventListener('install', event => {
         '/finaciamientos/',
         '/finaciamientos/index.html',
         '/finaciamientos/manifest.json',
-        'https://i.postimg.cc/PJzvpZrv/T-tulo-primario.png'
+        'https://i.postimg.cc/9QS0f1tN/T-tulo-primario-1.png
       ]);
     })
   );
