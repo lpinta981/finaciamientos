@@ -1,0 +1,20 @@
+{
+  "short_name": "Financiamiento Tupak Rantina",
+  "name": "Financiamiento Tupak Rantina",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/JR9P9YJf/T-tulo-primario.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co/JR9P9YJf/T-tulo-primario.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/finaciamientos/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#012063"
+}
